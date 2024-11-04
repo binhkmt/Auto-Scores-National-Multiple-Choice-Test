@@ -1,3 +1,4 @@
+import time
 import imutils
 import numpy as np
 import cv2
@@ -111,11 +112,15 @@ def process_list_ans(list_answers):
 
     for answer_img in list_answers:
         for i in range(4):
+            filecheck=f'z{i}.jpg'
             bubble_choice = answer_img[:, start + i * offset:start + (i + 1) * offset]
+            cv2.imwrite(filecheck,bubble_choice)
             bubble_choice = cv2.threshold(bubble_choice, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
             bubble_choice = cv2.resize(bubble_choice, (28, 28), cv2.INTER_AREA)
             bubble_choice = bubble_choice.reshape((28, 28, 1))
+            
+            
             list_choices.append(bubble_choice)
 
     if len(list_choices) != 480:
@@ -152,9 +157,23 @@ def get_answers(list_answers):
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     img = cv2.imread('test1.jpg')
     list_ans_boxes = crop_image(img)
     list_ans = process_ans_blocks(list_ans_boxes)
     list_ans = process_list_ans(list_ans)
+    
+    
     answers = get_answers(list_ans)
+    end_time = time.time()  # Kết thúc đo thời gian
+
+    execution_time = end_time - start_time  # Tính thời gian thực thi
+    print(f"Thời gian thực thi: {execution_time} giây")
+    
     print(answers)
+
+    start_time2 = time.time()
+    get_answers(list_ans)
+    end_time2 = time.time()
+    execution_time2 = end_time2 - start_time2  # Tính thời gian thực thi
+    print(f"Thời gian thực thi 2: {execution_time2} giây")
